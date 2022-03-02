@@ -1,0 +1,40 @@
+name: Nuke
+on:
+  schedule:
+    - cron:  "0 5 * * *"
+  workflow_dispatch:
+jobs:
+  run:
+    name: Execute
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Assume aws-lab-nuke role
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/aws-lab-nuke
+        aws-region: eu-west-2
+    - name: cloud-nuke
+      run: |
+        mv ./cloud-nuke_linux_amd64 /usr/local/bin/cloud-nuke
+        chmod u+x /usr/local/bin/cloud-nuke
+        cloud-nuke aws \
+          --config ./config.yaml \
+          --resource-type ami \
+          --resource-type dynamodb \
+          --resource-type ec2 \
+          --resource-type ebs \
+          --resource-type elbv2 \
+          --resource-type ecsserv \
+          --resource-type ecscluster \
+          --resource-type kmscustomerkeys \
+          --resource-type lambda \
+          --resource-type nat-gateway \
+          --resource-type secretsmanager \
+          --resource-type s3 \
+          --resource-type vpc \
+          --force
