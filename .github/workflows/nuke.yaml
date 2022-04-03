@@ -28,7 +28,7 @@ jobs:
           --resource-type dynamodb \
           --resource-type ec2 \
           --resource-type ebs \
-          --resource-type eks \
+          --resource-type ekscluster \
           --resource-type elbv2 \
           --resource-type ecsserv \
           --resource-type ecscluster \
